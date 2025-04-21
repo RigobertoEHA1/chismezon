@@ -125,7 +125,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     setHasDragged(true);
   }
 
-  function handleImgMouseUp(e: React.MouseEvent<HTMLImageElement>) {
+  function handleImgMouseUp() {
     if (dragging) {
       setDragging(false);
       setStart(null);
@@ -133,7 +133,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
   }
 
   // Solo click, no drag
-  function handleImgClick(e: React.MouseEvent<HTMLImageElement>) {
+  function handleImgClick() {
     if (hasDragged) {
       setHasDragged(false);
       return;
