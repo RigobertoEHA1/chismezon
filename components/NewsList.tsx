@@ -109,14 +109,14 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
 
   // --- MODAL DE IMAGENES: ZOOM Y DRAG ---
   // Eventos de mouse para imagen grande del modal
-  function handleImgMouseDown(e: React.MouseEvent) {
+  function handleImgMouseDown(e: React.MouseEvent<HTMLImageElement>) {
     if (zoom === 1) return;
     setDragging(true);
     setHasDragged(false);
     setStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
   }
 
-  function handleImgMouseMove(e: React.MouseEvent) {
+  function handleImgMouseMove(e: React.MouseEvent<HTMLImageElement>) {
     if (!dragging || !start) return;
     setOffset({
       x: e.clientX - start.x,
@@ -125,7 +125,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     setHasDragged(true);
   }
 
-  function handleImgMouseUp(e: React.MouseEvent) {
+  function handleImgMouseUp(e: React.MouseEvent<HTMLImageElement>) {
     if (dragging) {
       setDragging(false);
       setStart(null);
@@ -133,7 +133,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
   }
 
   // Solo click, no drag
-  function handleImgClick(e: React.MouseEvent) {
+  function handleImgClick(e: React.MouseEvent<HTMLImageElement>) {
     if (hasDragged) {
       setHasDragged(false);
       return;

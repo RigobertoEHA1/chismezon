@@ -5,9 +5,20 @@ import { supabase } from '../../../lib/supabaseClient';
 import LikesDislikes from '../../../components/LikesDislikes';
 import Comentarios from '../../../components/Comentarios';
 
+type Noticia = {
+  id: string;
+  titulo: string;
+  contenido: string;
+  imagenes: string[] | null;
+  autor: string;
+  fecha: string;
+  likes: number;
+  dislikes: number;
+};
+
 export default function NoticiaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = React.use(params);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Noticia | null>(null);
   const [loading, setLoading] = useState(true);
   const [likesRefresh, setLikesRefresh] = useState(0);
   const [albumIdx, setAlbumIdx] = useState<number | null>(null);
@@ -84,55 +95,54 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
           </div>
 
           {/* Modal tipo álbum */}
-          {albumIdx !== null && (
-  <div
-    className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-    onClick={() => setAlbumIdx(null)}
-  >
-    <div className="relative max-w-3xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
-      <img
-        src={data.imagenes[albumIdx]}
-        alt={`Imagen ampliada ${albumIdx + 1}`}
-        className="max-h-[80vh] max-w-full rounded-xl shadow-lg"
-      />
-      <div className="mt-4 flex justify-center items-center gap-6 w-full">
-        <button
-          className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
-            albumIdx === 0
-              ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
-          }`}
-          onClick={() => setAlbumIdx(albumIdx > 0 ? albumIdx - 1 : albumIdx)}
-          disabled={albumIdx === 0}
-          aria-label="Anterior"
-        >
-          ‹
-        </button>
-        <button
-          className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
-            albumIdx === data.imagenes.length - 1
-              ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
-          }`}
-          onClick={() => setAlbumIdx(albumIdx < data.imagenes.length - 1 ? albumIdx + 1 : albumIdx)}
-          disabled={albumIdx === data.imagenes.length - 1}
-          aria-label="Siguiente"
-        >
-          ›
-        </button>
-      </div>
-      <button
-        className="absolute top-3 right-3 bg-pink-600 border-2 border-white text-white font-bold p-2 rounded-full text-xl shadow-lg hover:bg-pink-700 hover:scale-110 transition"
-        onClick={() => setAlbumIdx(null)}
-        title="Cerrar"
-        aria-label="Cerrar"
-      >
-        ×
-      </button>
-    </div>
-  </div>
-)}
-
+          {albumIdx !== null && albumIdx >= 0 && albumIdx < data.imagenes!.length && (
+            <div
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+              onClick={() => setAlbumIdx(null)}
+            >
+              <div className="relative max-w-3xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+                <img
+                  src={data.imagenes![albumIdx]}
+                  alt={`Imagen ampliada ${albumIdx + 1}`}
+                  className="max-h-[80vh] max-w-full rounded-xl shadow-lg"
+                />
+                <div className="mt-4 flex justify-center items-center gap-6 w-full">
+                  <button
+                    className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
+                      albumIdx === 0
+                        ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
+                    }`}
+                    onClick={() => setAlbumIdx(albumIdx > 0 ? albumIdx - 1 : albumIdx)}
+                    disabled={albumIdx === 0}
+                    aria-label="Anterior"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
+                      albumIdx === data.imagenes!.length - 1
+                        ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
+                    }`}
+                    onClick={() => setAlbumIdx(albumIdx < data.imagenes!.length - 1 ? albumIdx + 1 : albumIdx)}
+                    disabled={albumIdx === data.imagenes!.length - 1}
+                    aria-label="Siguiente"
+                  >
+                    ›
+                  </button>
+                </div>
+                <button
+                  className="absolute top-3 right-3 bg-pink-600 border-2 border-white text-white font-bold p-2 rounded-full text-xl shadow-lg hover:bg-pink-700 hover:scale-110 transition"
+                  onClick={() => setAlbumIdx(null)}
+                  title="Cerrar"
+                  aria-label="Cerrar"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
 
