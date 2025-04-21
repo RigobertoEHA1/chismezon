@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+/* Placeholder más oscuro y totalmente visible */
+::placeholder {
+  color: #444 !important;
+  opacity: 1 !important;
+}
+
+/* Todos los input y textarea: texto siempre oscuro */
+input, textarea {
+  color: #171717 !important; /* O usa #000 si prefieres negro absoluto */
+}
