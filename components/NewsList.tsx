@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '../lib/supabaseClient';
 import toast from 'react-hot-toast';
@@ -115,6 +115,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     setHasDragged(false);
     setStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
   }
+
   function handleImgMouseMove(e: React.MouseEvent) {
     if (!dragging || !start) return;
     setOffset({
@@ -123,12 +124,14 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     });
     setHasDragged(true);
   }
+
   function handleImgMouseUp(e: React.MouseEvent) {
     if (dragging) {
       setDragging(false);
       setStart(null);
     }
   }
+
   // Solo click, no drag
   function handleImgClick(e: React.MouseEvent) {
     if (hasDragged) {
@@ -143,6 +146,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     });
     setOffset({ x: 0, y: 0 });
   }
+
   function handleImgMouseLeave() {
     setDragging(false);
     setStart(null);
