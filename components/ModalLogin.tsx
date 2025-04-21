@@ -8,6 +8,8 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: () => void;
+  backdropClass?: string;
+  contentClass?: string;
 };
 
 export default function ModalLogin({ isOpen, onClose, onLoginSuccess }: Props) {

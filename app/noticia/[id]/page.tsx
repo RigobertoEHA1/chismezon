@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import LikesDislikes from '../../../components/LikesDislikes';
 import Comentarios from '../../../components/Comentarios';
-import Image from 'next/image';
+import ImageAlbumModal from '../../../components/ImageAlbumModal';
 
 type Noticia = {
   id: string;
@@ -22,18 +22,30 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
   const [data, setData] = useState<Noticia | null>(null);
   const [loading, setLoading] = useState(true);
   const [likesRefresh, setLikesRefresh] = useState(0);
-  const [albumIdx, setAlbumIdx] = useState<number | null>(null);
 
-  // Fetch noticia individual
-  const fetchNoticia = async () => {
-    const { data, error } = await supabase
-      .from('noticias')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (!error && data) setData(data);
-    setLoading(false);
-  };
+  // Álbum modal state
+  const [album, setAlbum] = useState<{ imgs: string[]; idx: number } | null>(null);
+  // Zoom y drag
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const [start, setStart] = useState<{ x: number; y: number } | null>(null);
+  const [hasDragged, setHasDragged] = useState(false);
+
+  useEffect(() => {
+    const fetchNoticia = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('noticias')
+        .select('*')
+        .eq('id', id)
+        .single();
+      if (!error && data) setData(data);
+      setLoading(false);
+    };
+    fetchNoticia();
+    // eslint-disable-next-line
+  }, [id, likesRefresh]);
 
   function linkify(text: string) {
     const urlRegex = /((https?:\/\/[^\s]+)|(www\.[^\s]+))/g;
@@ -46,12 +58,6 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
     });
     return <span dangerouslySetInnerHTML={{ __html: html }} />;
   }
-  
-
-  useEffect(() => {
-    fetchNoticia();
-    // eslint-disable-next-line
-  }, [id]);
 
   const handleLikeDislike = async (type: 'like' | 'dislike') => {
     if (!data) return;
@@ -59,8 +65,53 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
       [type === 'like' ? 'likes' : 'dislikes']: (type === 'like' ? data.likes : data.dislikes) + 1,
     }).eq('id', data.id);
     setLikesRefresh(r => r + 1);
-    fetchNoticia();
   };
+
+  // --- MODAL DE IMAGENES: ZOOM Y DRAG ---
+  function handleImgMouseDown(e: React.MouseEvent<HTMLImageElement>) {
+    if (zoom === 1) return;
+    setDragging(true);
+    setHasDragged(false);
+    setStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+  }
+  function handleImgMouseMove(e: React.MouseEvent<HTMLImageElement>) {
+    if (!dragging || !start) return;
+    setOffset({
+      x: e.clientX - start.x,
+      y: e.clientY - start.y,
+    });
+    setHasDragged(true);
+  }
+  function handleImgMouseUp() {
+    if (dragging) {
+      setDragging(false);
+      setStart(null);
+    }
+  }
+  function handleImgClick() {
+    if (hasDragged) {
+      setHasDragged(false);
+      return;
+    }
+    setZoom(z => {
+      if (z === 1) return 2;
+      if (z === 2) return 3;
+      return 1;
+    });
+    setOffset({ x: 0, y: 0 });
+  }
+  function handleImgMouseLeave() {
+    setDragging(false);
+    setStart(null);
+    setHasDragged(false);
+  }
+  function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
+    if (e.target === e.currentTarget) {
+      setAlbum(null);
+      setZoom(1);
+      setOffset({ x: 0, y: 0 });
+    }
+  }
 
   if (loading) return <div className="text-center py-8 text-gray-400">Cargando...</div>;
   if (!data) return <div className="text-center py-8 text-gray-400">Noticia no encontrada.</div>;
@@ -78,75 +129,49 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
       />
       <div className="mb-3 text-gray-700 whitespace-pre-line"> {linkify(data.contenido)}</div>
 
-      {/* Imágenes tipo álbum */}
       {data.imagenes && data.imagenes.length > 0 && (
         <>
+          {/* Thumbnails */}
           <div className="flex gap-2 flex-wrap mb-2">
-            {data.imagenes.map((img: string, idx: number) =>
+            {data.imagenes.map((img, idx) =>
               img ? (
-                <Image
+                <img
                   key={idx}
                   src={img}
                   alt={`Imagen ${idx + 1}`}
-                  width={80}
-                  height={80}
-                  className="object-cover rounded-lg shadow border border-gray-200 cursor-pointer transition hover:scale-110"
-                  onClick={() => setAlbumIdx(idx)}
+                  className="w-16 h-16 object-cover rounded-lg shadow border border-gray-200 cursor-pointer transition hover:scale-110"
+                  onClick={() => {
+                    setAlbum({ imgs: data.imagenes as string[], idx });
+                    setZoom(1);
+                    setOffset({ x: 0, y: 0 });
+                  }}
                 />
               ) : null
             )}
           </div>
 
-          {/* Modal tipo álbum */}
-          {albumIdx !== null && albumIdx >= 0 && albumIdx < data.imagenes!.length && (
-            <div
-              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
-              onClick={() => setAlbumIdx(null)}
-            >
-              <div className="relative max-w-3xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
-                <Image
-                  src={data.imagenes![albumIdx]}
-                  alt={`Imagen ampliada ${albumIdx + 1}`}
-                  width={1200}
-                  height={800}
-                  className="max-h-[80vh] max-w-full rounded-xl shadow-lg"
-                />
-                <div className="mt-4 flex justify-center items-center gap-6 w-full">
-                  <button
-                    className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
-                      albumIdx === 0
-                        ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
-                    }`}
-                    onClick={() => setAlbumIdx(albumIdx > 0 ? albumIdx - 1 : albumIdx)}
-                    disabled={albumIdx === 0}
-                    aria-label="Anterior"
-                  >
-                    ‹
-                  </button>
-                  <button
-                    className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
-                      albumIdx === data.imagenes!.length - 1
-                        ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
-                        : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
-                    }`}
-                    onClick={() => setAlbumIdx(albumIdx < data.imagenes!.length - 1 ? albumIdx + 1 : albumIdx)}
-                    disabled={albumIdx === data.imagenes!.length - 1}
-                    aria-label="Siguiente"
-                  >
-                    ›
-                  </button>
-                </div>
-                <button
-                  className="absolute top-3 right-3 bg-pink-600 border-2 border-white text-white font-bold p-2 rounded-full text-xl shadow-lg hover:bg-pink-700 hover:scale-110 transition"
-                  onClick={() => setAlbumIdx(null)}
-                  title="Cerrar"
-                  aria-label="Cerrar"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
+          {/* Modal álbum para imágenes */}
+          {album && (
+            <ImageAlbumModal
+              album={album}
+              setAlbum={setAlbum}
+              zoom={zoom}
+              setZoom={setZoom}
+              offset={offset}
+              setOffset={setOffset}
+              dragging={dragging}
+              setDragging={setDragging}
+              start={start}
+              setStart={setStart}
+              hasDragged={hasDragged}
+              setHasDragged={setHasDragged}
+              handleImgMouseDown={handleImgMouseDown}
+              handleImgMouseMove={handleImgMouseMove}
+              handleImgMouseUp={handleImgMouseUp}
+              handleImgClick={handleImgClick}
+              handleImgMouseLeave={handleImgMouseLeave}
+              handleBackdropClick={handleBackdropClick}
+            />
           )}
         </>
       )}

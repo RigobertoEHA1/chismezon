@@ -7,6 +7,8 @@ import toast from 'react-hot-toast';
 import Comentarios from '../components/Comentarios';
 import LikesDislikes from '../components/LikesDislikes';
 import ModalEditNews from '../components/ModalEditNews';
+import ImageAlbumModal from '../components/ImageAlbumModal';
+
 
 type News = {
   id: string;
@@ -43,9 +45,8 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
   const [expanded, setExpanded] = useState<{ [id: string]: boolean }>({});
   const [likesRefresh, setLikesRefresh] = useState(0);
 
-  // Album state for all news
+  // Album modal state
   const [album, setAlbum] = useState<{ imgs: string[]; idx: number } | null>(null);
-
   // Zoom y drag state
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -108,14 +109,12 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
   };
 
   // --- MODAL DE IMAGENES: ZOOM Y DRAG ---
-  // Eventos de mouse para imagen grande del modal
   function handleImgMouseDown(e: React.MouseEvent<HTMLImageElement>) {
     if (zoom === 1) return;
     setDragging(true);
     setHasDragged(false);
     setStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
   }
-
   function handleImgMouseMove(e: React.MouseEvent<HTMLImageElement>) {
     if (!dragging || !start) return;
     setOffset({
@@ -124,21 +123,17 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     });
     setHasDragged(true);
   }
-
   function handleImgMouseUp() {
     if (dragging) {
       setDragging(false);
       setStart(null);
     }
   }
-
-  // Solo click, no drag
   function handleImgClick() {
     if (hasDragged) {
       setHasDragged(false);
       return;
     }
-    // Zoom cíclico: 1→2→3→1
     setZoom(z => {
       if (z === 1) return 2;
       if (z === 2) return 3;
@@ -146,13 +141,11 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     });
     setOffset({ x: 0, y: 0 });
   }
-
   function handleImgMouseLeave() {
     setDragging(false);
     setStart(null);
     setHasDragged(false);
   }
-
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) {
       setAlbum(null);
@@ -164,7 +157,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
   if (loading) return <div className="text-center text-gray-400">Cargando noticias...</div>;
 
   return (
-    <div className="grid gap-6">
+    <div className="max-w-2xl mx-auto p-6 grid gap-6">
       {news.map((item) => {
         const isLong = item.contenido.length > 300;
         const isExpanded = expanded[item.id];
@@ -266,96 +259,29 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
         );
       })}
 
-      {/* Modal álbum para imágenes */}
-      {album && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50"
-          onClick={handleBackdropClick}
-        >
-          <div
-            className="relative max-w-3xl w-[90vw] flex flex-col items-center"
-            style={{ pointerEvents: 'auto' }}
-          >
-            <div
-              className="flex items-center justify-center w-full h-[80vh] bg-black rounded-xl overflow-hidden"
-            >
-              <img
-                src={album.imgs[album.idx]}
-                alt={`Imagen ampliada ${album.idx + 1}`}
-                className="object-contain w-full h-full max-w-full max-h-full bg-black rounded-xl shadow-lg select-none"
-                draggable={false}
-                style={{
-                  transform: `scale(${zoom}) translate(${offset.x}px, ${offset.y}px)`,
-                  cursor: zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
-                  userSelect: 'none'
-                }}
-                onMouseDown={handleImgMouseDown}
-                onMouseMove={handleImgMouseMove}
-                onMouseUp={handleImgMouseUp}
-                onClick={handleImgClick}
-                onMouseLeave={handleImgMouseLeave}
-                onDragStart={e => e.preventDefault()}
-              />
-            </div>
-            <div className="mt-4 flex justify-center items-center gap-6 w-full">
-              <button
-                className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
-                  album.idx === 0
-                    ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
-                }`}
-                onClick={() =>
-                  setAlbum({ ...album, idx: album.idx > 0 ? album.idx - 1 : album.idx })
-                }
-                disabled={album.idx === 0}
-                aria-label="Anterior"
-              >
-                ‹
-              </button>
-              <button
-                className={`text-2xl font-bold p-2 rounded-full border-2 transition ${
-                  album.idx === album.imgs.length - 1
-                    ? 'bg-gray-300 border-gray-300 text-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 border-blue-400 text-white hover:bg-blue-700 hover:border-blue-600 hover:scale-110'
-                }`}
-                onClick={() =>
-                  setAlbum({
-                    ...album,
-                    idx: album.idx < album.imgs.length - 1 ? album.idx + 1 : album.idx,
-                  })
-                }
-                disabled={album.idx === album.imgs.length - 1}
-                aria-label="Siguiente"
-              >
-                ›
-              </button>
-            </div>
-            <button
-              className="absolute top-3 right-3 bg-pink-600 border-2 border-white text-white font-bold p-2 rounded-full text-xl shadow-lg hover:bg-pink-700 hover:scale-110 transition"
-              onClick={() => {
-                setAlbum(null);
-                setZoom(1);
-                setOffset({ x: 0, y: 0 });
-              }}
-              title="Cerrar"
-              aria-label="Cerrar"
-            >
-              ×
-            </button>
-            {zoom > 1 && (
-              <button
-                className="absolute bottom-4 right-4 bg-gray-800/80 text-white px-3 py-1 rounded shadow"
-                onClick={() => {
-                  setZoom(1);
-                  setOffset({ x: 0, y: 0 });
-                }}
-              >
-                Restablecer zoom
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+{album && (
+  <ImageAlbumModal
+    album={album}
+    setAlbum={setAlbum}
+    zoom={zoom}
+    setZoom={setZoom}
+    offset={offset}
+    setOffset={setOffset}
+    dragging={dragging}
+    setDragging={setDragging}
+    start={start}
+    setStart={setStart}
+    hasDragged={hasDragged}
+    setHasDragged={setHasDragged}
+    handleImgMouseDown={handleImgMouseDown}
+    handleImgMouseMove={handleImgMouseMove}
+    handleImgMouseUp={handleImgMouseUp}
+    handleImgClick={handleImgClick}
+    handleImgMouseLeave={handleImgMouseLeave}
+    handleBackdropClick={handleBackdropClick}
+  />
+)}
+
 
       {/* Modal de edición */}
       <ModalEditNews

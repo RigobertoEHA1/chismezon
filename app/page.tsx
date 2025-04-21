@@ -6,6 +6,7 @@ import ModalLogin from '../components/ModalLogin';
 import ModalAddNews from '../components/ModalAddNews';
 import { Toaster } from 'react-hot-toast';
 import { supabase } from '../lib/supabaseClient';
+import { FaSignInAlt, FaSignOutAlt, FaPlus } from 'react-icons/fa';
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
@@ -50,34 +51,44 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto p-4">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Chismezón</h1>
-          <div className="flex gap-2">
+        {/* Header con flex para alinear elementos */}
+        <header className="flex items-center justify-between py-6 mb-2 relative">
+          {/* Título centrado y colorido */}
+          <h1 className="flex-1 text-4xl md:text-5xl font-extrabold text-center select-none bg-gradient-to-r from-pink-500 via-yellow-400 to-blue-500 bg-clip-text text-transparent drop-shadow">
+            Chismezón
+          </h1>
+          {/* Botones a la derecha */}
+          <div className="flex items-center gap-2 ml-4">
             {isAdmin ? (
               <>
                 <button
                   onClick={() => setShowAdd(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                  title="Nueva Noticia"
+                  className="text-blue-600 hover:text-blue-800 text-2xl transition-colors flex items-center justify-center w-12 h-12 rounded-full"
                 >
-                  Nueva Noticia
+                  <FaPlus />
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+                  className="text-gray-500 hover:text-red-600 text-3xl transition-colors flex items-center justify-center w-12 h-12 rounded-full"
+                  title="Cerrar Sesión"
+                  aria-label="Cerrar Sesión"
                 >
-                  Cerrar Sesión
+                  <FaSignOutAlt />
                 </button>
               </>
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="text-gray-500 hover:text-blue-500 text-4xl transition-colors flex items-center justify-center w-14 h-14 rounded-full"
+                title="Iniciar sesión"
+                aria-label="Iniciar sesión"
               >
-                Iniciar Sesión
+                <FaSignInAlt />
               </button>
             )}
           </div>
-        </div>
+        </header>
 
         <NewsList isAdmin={isAdmin} reload={reload} />
 

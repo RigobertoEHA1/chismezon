@@ -29,3 +29,8 @@ body {
 input, textarea {
   color: #171717 !important; /* O usa #000 si prefieres negro absoluto */
 }
+
+.elemento {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
