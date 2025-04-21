@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import LikesDislikes from '../../../components/LikesDislikes';
 import Comentarios from '../../../components/Comentarios';
+import Image from 'next/image';
 
 type Noticia = {
   id: string;
@@ -83,11 +84,13 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
           <div className="flex gap-2 flex-wrap mb-2">
             {data.imagenes.map((img: string, idx: number) =>
               img ? (
-                <img
+                <Image
                   key={idx}
                   src={img}
                   alt={`Imagen ${idx + 1}`}
-                  className="w-20 h-20 object-cover rounded-lg shadow border border-gray-200 cursor-pointer transition hover:scale-110"
+                  width={80}
+                  height={80}
+                  className="object-cover rounded-lg shadow border border-gray-200 cursor-pointer transition hover:scale-110"
                   onClick={() => setAlbumIdx(idx)}
                 />
               ) : null
@@ -101,9 +104,11 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
               onClick={() => setAlbumIdx(null)}
             >
               <div className="relative max-w-3xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
-                <img
+                <Image
                   src={data.imagenes![albumIdx]}
                   alt={`Imagen ampliada ${albumIdx + 1}`}
+                  width={1200}
+                  height={800}
                   className="max-h-[80vh] max-w-full rounded-xl shadow-lg"
                 />
                 <div className="mt-4 flex justify-center items-center gap-6 w-full">
