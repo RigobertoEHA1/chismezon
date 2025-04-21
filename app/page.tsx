@@ -49,28 +49,28 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-4">
-        {/* Header con flex para alinear elementos */}
-        <header className="flex items-center justify-between py-6 mb-2 relative">
+    <main className="min-h-screen bg-gray-50 overflow-x-hidden">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4">
+        {/* Header responsivo */}
+        <header className="flex flex-col sm:flex-row items-center justify-between py-6 mb-2 relative gap-2 sm:gap-0">
           {/* Título centrado y colorido */}
-          <h1 className="flex-1 text-4xl md:text-5xl font-extrabold text-center select-none bg-gradient-to-r from-pink-500 via-yellow-400 to-blue-500 bg-clip-text text-transparent drop-shadow">
+          <h1 className="w-full text-3xl sm:text-5xl font-extrabold text-center select-none bg-gradient-to-r from-pink-500 via-yellow-400 to-blue-500 bg-clip-text text-transparent drop-shadow">
             Chismezón
           </h1>
           {/* Botones a la derecha */}
-          <div className="flex items-center gap-2 ml-4">
+          <div className="flex items-center gap-2 mt-2 sm:mt-0 sm:ml-4">
             {isAdmin ? (
               <>
                 <button
                   onClick={() => setShowAdd(true)}
                   title="Nueva Noticia"
-                  className="text-blue-600 hover:text-blue-800 text-2xl transition-colors flex items-center justify-center w-12 h-12 rounded-full"
+                  className="text-blue-600 hover:text-blue-800 text-2xl transition-colors flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full"
                 >
                   <FaPlus />
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-500 hover:text-red-600 text-3xl transition-colors flex items-center justify-center w-12 h-12 rounded-full"
+                  className="text-gray-500 hover:text-red-600 text-3xl transition-colors flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full"
                   title="Cerrar Sesión"
                   aria-label="Cerrar Sesión"
                 >
@@ -80,7 +80,7 @@ export default function Home() {
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="text-gray-500 hover:text-blue-500 text-4xl transition-colors flex items-center justify-center w-14 h-14 rounded-full"
+                className="text-gray-500 hover:text-blue-500 text-3xl sm:text-4xl transition-colors flex items-center justify-center w-12 h-12 rounded-full"
                 title="Iniciar sesión"
                 aria-label="Iniciar sesión"
               >

@@ -89,23 +89,23 @@ export default function Comentarios({
       {nivel === 0 && (
         <>
           <div className="font-medium text-xs text-gray-700 mb-2">Comentarios</div>
-          <form onSubmit={agregarComentario} className="flex gap-2 mb-2">
-            <input
-              className="border rounded p-1 flex-1 text-xs bg-white text-gray-900"
-              placeholder="Escribe un comentario..."
-              value={nuevo}
-              onChange={e => setNuevo(e.target.value)}
-              disabled={loading}
-              maxLength={300}
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-3 py-1 rounded text-xs"
-              disabled={loading}
-            >
-              Comentar
-            </button>
-          </form>
+          <form onSubmit={agregarComentario} className="flex flex-col sm:flex-row gap-2 mb-2">
+  <input
+    className="border rounded p-1 flex-1 text-xs bg-white text-gray-900"
+    placeholder="Escribe un comentario..."
+    value={nuevo}
+    onChange={e => setNuevo(e.target.value)}
+    disabled={loading}
+    maxLength={300}
+  />
+  <button
+    type="submit"
+    className="bg-blue-600 text-white px-3 py-1 rounded text-xs w-full sm:w-auto"
+    disabled={loading}
+  >
+    Comentar
+  </button>
+</form>
         </>
       )}
 
