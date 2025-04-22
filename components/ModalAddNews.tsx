@@ -118,14 +118,14 @@ export default function ModalAddNews({ isOpen, onClose, onNewsAdded }: Props) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-8 shadow-2xl border border-blue-100 transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 sm:p-8 shadow-2xl border border-blue-100 transition-all">
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-bold leading-6 text-blue-600 mb-2"
                 >
                   Agregar Noticia
                 </Dialog.Title>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 text-left">
                   <input
                     type="text"
                     className="border w-full p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder-gray-700 text-gray-900"

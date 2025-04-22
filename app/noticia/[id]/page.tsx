@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
 import LikesDislikes from '../../../components/LikesDislikes';
 import Comentarios from '../../../components/Comentarios';
 import ImageAlbumModal from '../../../components/ImageAlbumModal';
+import React from "react";
 
 type Noticia = {
   id: string;
@@ -33,6 +34,7 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
   const [hasDragged, setHasDragged] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     const fetchNoticia = async () => {
       setLoading(true);
       const { data, error } = await supabase
@@ -40,11 +42,11 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
         .select('*')
         .eq('id', id)
         .single();
-      if (!error && data) setData(data);
+      if (!error && data && mounted) setData(data);
       setLoading(false);
     };
     fetchNoticia();
-    // eslint-disable-next-line
+    return () => { mounted = false; };
   }, [id, likesRefresh]);
 
   function linkify(text: string) {
@@ -93,11 +95,7 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
       setHasDragged(false);
       return;
     }
-    setZoom(z => {
-      if (z === 1) return 2;
-      if (z === 2) return 3;
-      return 1;
-    });
+    setZoom(z => (z === 1 ? 2 : z === 2 ? 3 : 1));
     setOffset({ x: 0, y: 0 });
   }
   function handleImgMouseLeave() {
@@ -113,12 +111,12 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
     }
   }
 
-  if (loading) return <div className="text-center py-8 text-gray-400">Cargando...</div>;
-  if (!data) return <div className="text-center py-8 text-gray-400">Noticia no encontrada.</div>;
+  if (loading) return <div className="text-center py-12 text-gray-400 text-lg animate-pulse">Cargando...</div>;
+  if (!data) return <div className="text-center py-12 text-gray-400 text-lg">Noticia no encontrada.</div>;
 
   return (
-    <main className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow">
-      <h1 className="text-2xl font-bold mb-2 text-blue-600">{data.titulo}</h1>
+    <main className="max-w-2xl mx-auto p-2 sm:p-6 bg-white rounded-xl shadow-md sm:shadow-lg border transition-all">
+      <h1 className="text-xl sm:text-2xl font-bold mb-2 text-blue-600 break-words">{data.titulo}</h1>
       <p className="text-xs text-gray-400 mb-2">{new Date(data.fecha).toLocaleString()}</p>
       <LikesDislikes
         likes={data.likes || 0}
@@ -127,7 +125,7 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
         onReact={handleLikeDislike}
         refresh={likesRefresh}
       />
-      <div className="mb-3 text-gray-700 whitespace-pre-line"> {linkify(data.contenido)}</div>
+      <div className="mb-3 text-gray-700 whitespace-pre-line break-words">{linkify(data.contenido)}</div>
 
       {data.imagenes && data.imagenes.length > 0 && (
         <>

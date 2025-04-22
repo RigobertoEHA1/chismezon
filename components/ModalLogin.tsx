@@ -8,8 +8,6 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: () => void;
-  backdropClass?: string;
-  contentClass?: string;
 };
 
 export default function ModalLogin({ isOpen, onClose, onLoginSuccess }: Props) {
@@ -71,7 +69,7 @@ export default function ModalLogin({ isOpen, onClose, onLoginSuccess }: Props) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-8 shadow-2xl border border-blue-100 transition-all">
+              <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-6 sm:p-8 shadow-2xl border border-blue-100 transition-all">
                 <Dialog.Title
                   as="h3"
                   className="text-xl font-bold leading-6 text-blue-600 mb-2"

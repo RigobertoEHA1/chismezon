@@ -9,7 +9,6 @@ import LikesDislikes from '../components/LikesDislikes';
 import ModalEditNews from '../components/ModalEditNews';
 import ImageAlbumModal from '../components/ImageAlbumModal';
 
-
 type News = {
   id: string;
   titulo: string;
@@ -59,16 +58,18 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
   const [editingNews, setEditingNews] = useState<News | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     const fetchNews = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('noticias')
         .select('*')
         .order('fecha', { ascending: false });
-      if (!error && data) setNews(data as News[]);
+      if (!error && data && mounted) setNews(data as News[]);
       setLoading(false);
     };
     fetchNews();
+    return () => { mounted = false; };
   }, [reload, refresh]);
 
   const handleDelete = async (id: string) => {
@@ -78,7 +79,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
       toast.error('Error al eliminar noticia');
     } else {
       toast.success('Noticia eliminada');
-      setRefresh(!refresh);
+      setRefresh(r => !r);
     }
   };
 
@@ -134,11 +135,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
       setHasDragged(false);
       return;
     }
-    setZoom(z => {
-      if (z === 1) return 2;
-      if (z === 2) return 3;
-      return 1;
-    });
+    setZoom(z => (z === 1 ? 2 : z === 2 ? 3 : 1));
     setOffset({ x: 0, y: 0 });
   }
   function handleImgMouseLeave() {
@@ -154,10 +151,10 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
     }
   }
 
-  if (loading) return <div className="text-center text-gray-400">Cargando noticias...</div>;
+  if (loading) return <div className="text-center text-gray-400 py-10 text-lg animate-pulse">Cargando noticias...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto p-6 grid gap-6">
+    <div className="max-w-2xl mx-auto p-2 sm:p-6 grid gap-6">
       {news.map((item) => {
         const isLong = item.contenido.length > 300;
         const isExpanded = expanded[item.id];
@@ -168,10 +165,10 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
         const noticiaUrl = `${getSiteUrl()}/noticia/${item.id}`;
 
         return (
-          <div
+          <article
             key={item.id}
             id={item.id}
-            className="relative bg-white rounded-xl shadow-lg border hover:shadow-2xl transition-all duration-200 p-6 group"
+            className="relative bg-white rounded-xl shadow-lg border hover:shadow-2xl transition-all duration-200 p-4 sm:p-6 group"
             style={{ wordBreak: 'break-word' }}
           >
             {isAdmin && (
@@ -181,21 +178,23 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
                     setEditingNews(item);
                     setShowEditModal(true);
                   }}
-                  className="bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md hover:scale-110 transition-transform"
+                  className="bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-yellow-300"
                   title="Editar noticia"
+                  aria-label="Editar noticia"
                 >
                   Editar
                 </button>
                 <button
                   onClick={() => handleDelete(item.id)}
-                  className="bg-gradient-to-br from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md hover:scale-110 transition-transform"
+                  className="bg-gradient-to-br from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-pink-400"
                   title="Eliminar noticia"
+                  aria-label="Eliminar noticia"
                 >
                   Eliminar
                 </button>
               </div>
             )}
-            <h2 className="font-semibold text-xl text-pink-600 group-hover:text-purple-600 transition-colors">
+            <h2 className="font-semibold text-xl sm:text-2xl text-pink-600 group-hover:text-purple-600 transition-colors break-words">
               {item.titulo}
             </h2>
             <p className="text-xs text-gray-400 mb-2">{new Date(item.fecha).toLocaleString()}</p>
@@ -212,6 +211,7 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
                 <button
                   className="text-blue-600 ml-2 underline text-xs"
                   onClick={() => toggleExpand(item.id)}
+                  aria-label={isExpanded ? "Leer menos" : "Leer más"}
                 >
                   {isExpanded ? 'Leer menos' : 'Leer más'}
                 </button>
@@ -246,7 +246,8 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
               </Link>
               <button
                 onClick={() => copyLink(noticiaUrl)}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold shadow transition flex items-center gap-1"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-xs font-semibold shadow transition flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                aria-label="Copiar enlace"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 010 5.656m-3.656-3.656a4 4 0 015.656 0m-5.656 5.656a4 4 0 010-5.656m9.192 1.414a6 6 0 11-8.485-8.485 6 6 0 018.485 8.485z" />
@@ -255,33 +256,32 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
               </button>
             </div>
             <Comentarios noticiaId={item.id} />
-          </div>
+          </article>
         );
       })}
 
-{album && (
-  <ImageAlbumModal
-    album={album}
-    setAlbum={setAlbum}
-    zoom={zoom}
-    setZoom={setZoom}
-    offset={offset}
-    setOffset={setOffset}
-    dragging={dragging}
-    setDragging={setDragging}
-    start={start}
-    setStart={setStart}
-    hasDragged={hasDragged}
-    setHasDragged={setHasDragged}
-    handleImgMouseDown={handleImgMouseDown}
-    handleImgMouseMove={handleImgMouseMove}
-    handleImgMouseUp={handleImgMouseUp}
-    handleImgClick={handleImgClick}
-    handleImgMouseLeave={handleImgMouseLeave}
-    handleBackdropClick={handleBackdropClick}
-  />
-)}
-
+      {album && (
+        <ImageAlbumModal
+          album={album}
+          setAlbum={setAlbum}
+          zoom={zoom}
+          setZoom={setZoom}
+          offset={offset}
+          setOffset={setOffset}
+          dragging={dragging}
+          setDragging={setDragging}
+          start={start}
+          setStart={setStart}
+          hasDragged={hasDragged}
+          setHasDragged={setHasDragged}
+          handleImgMouseDown={handleImgMouseDown}
+          handleImgMouseMove={handleImgMouseMove}
+          handleImgMouseUp={handleImgMouseUp}
+          handleImgClick={handleImgClick}
+          handleImgMouseLeave={handleImgMouseLeave}
+          handleBackdropClick={handleBackdropClick}
+        />
+      )}
 
       {/* Modal de edición */}
       <ModalEditNews

@@ -1,36 +1,92 @@
 @import "tailwindcss";
 
+/* Variables para fuentes */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  --font-mono: var(--font-geist-mono, 'Fira Mono', monospace);
 }
 
+/* Dark mode real, soportado por Tailwind (usa .dark en <html> si quieres forzar) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
-
+html,
 body {
+  min-height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  /* Para evitar scroll horizontal en mobile */
+  overflow-x: hidden;
 }
-/* Placeholder más oscuro y totalmente visible */
+body {
+  /* fallback para Tailwind dark mode */
+  @apply bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100;
+}
+/* Placeholder oscuro y visible */
 ::placeholder {
   color: #444 !important;
   opacity: 1 !important;
 }
 
-/* Todos los input y textarea: texto siempre oscuro */
-input, textarea {
-  color: #171717 !important; /* O usa #000 si prefieres negro absoluto */
+/* Inputs y textarea: texto siempre visible según modo */
+input,
+textarea {
+  color: var(--foreground) !important;
+  background: transparent;
+  font-family: inherit;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 0 2px #7dd3fc33;
 }
 
-.elemento {
+/* Ajuste de tamaño del texto en móviles */
+.elemento, html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+/* Selección de texto mejorada */
+::selection {
+  background: #a5b4fc88;
+  color: #1e293b;
+}
+::-webkit-selection {
+  background: #a5b4fc88;
+  color: #1e293b;
+}
+
+/* Scrollbar minimalista */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #e5e7eb;
+}
+::-webkit-scrollbar-thumb {
+  background: #bbb8dd;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a5b4fc;
+}
+
+/* Imagenes responsivas (por si acaso) */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  object-fit: cover;
 }

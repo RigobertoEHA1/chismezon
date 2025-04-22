@@ -90,22 +90,22 @@ export default function Comentarios({
         <>
           <div className="font-medium text-xs text-gray-700 mb-2">Comentarios</div>
           <form onSubmit={agregarComentario} className="flex flex-col sm:flex-row gap-2 mb-2">
-  <input
-    className="border rounded p-1 flex-1 text-xs bg-white text-gray-900"
-    placeholder="Escribe un comentario..."
-    value={nuevo}
-    onChange={e => setNuevo(e.target.value)}
-    disabled={loading}
-    maxLength={300}
-  />
-  <button
-    type="submit"
-    className="bg-blue-600 text-white px-3 py-1 rounded text-xs w-full sm:w-auto"
-    disabled={loading}
-  >
-    Comentar
-  </button>
-</form>
+            <input
+              className="border rounded p-1 flex-1 text-xs bg-white text-gray-900"
+              placeholder="Escribe un comentario..."
+              value={nuevo}
+              onChange={e => setNuevo(e.target.value)}
+              disabled={loading}
+              maxLength={300}
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-3 py-1 rounded text-xs w-full sm:w-auto transition-colors hover:bg-blue-700"
+              disabled={loading}
+            >
+              Comentar
+            </button>
+          </form>
         </>
       )}
 
@@ -119,7 +119,7 @@ export default function Comentarios({
             <div className="flex items-center gap-2 mt-1">
               {nivel === 0 && (
                 <button
-                  className="text-blue-500 text-xs underline"
+                  className="text-blue-500 text-xs underline transition-colors hover:text-blue-800"
                   onClick={() => setRespondiendo(respondiendo === c.id ? null : c.id)}
                 >
                   Responder
@@ -140,7 +140,7 @@ export default function Comentarios({
                 />
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-3 py-1 rounded text-xs"
+                  className="bg-blue-600 text-white px-3 py-1 rounded text-xs transition-colors hover:bg-blue-700"
                   disabled={loading}
                 >
                   Responder

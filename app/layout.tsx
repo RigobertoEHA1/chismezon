@@ -23,15 +23,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-blue-50 via-white to-pink-50 h-full`}
       >
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="w-full max-w-2xl bg-white/90 rounded-2xl shadow-2xl border border-gray-100 p-6 m-4 backdrop-blur">
+        <main className="min-h-screen flex items-center justify-center px-2 sm:px-4 py-4">
+          <section
+            aria-label="Contenedor principal"
+            className="w-full max-w-2xl sm:max-w-3xl bg-white/90 rounded-2xl shadow-2xl border border-gray-100 p-4 sm:p-6 m-2 sm:m-4 backdrop-blur-sm transition-all duration-200"
+          >
             {children}
-          </div>
-        </div>
+          </section>
+        </main>
       </body>
     </html>
   );

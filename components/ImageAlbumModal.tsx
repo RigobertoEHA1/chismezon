@@ -40,12 +40,15 @@ const ImageAlbumModal: React.FC<ImageAlbumModalProps> = ({
   <div
     className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50"
     onClick={handleBackdropClick}
+    aria-modal="true"
+    role="dialog"
+    tabIndex={-1}
   >
     <div
-      className="relative max-w-3xl w-[90vw] flex flex-col items-center"
+      className="relative max-w-3xl w-[96vw] sm:w-[90vw] flex flex-col items-center"
       style={{ pointerEvents: 'auto' }}
     >
-      <div className="flex items-center justify-center w-full h-[80vh] bg-black rounded-xl overflow-hidden">
+      <div className="flex items-center justify-center w-full h-[60vh] sm:h-[80vh] bg-black rounded-xl overflow-hidden">
         <img
           src={album.imgs[album.idx]}
           alt={`Imagen ampliada ${album.idx + 1}`}
@@ -53,7 +56,7 @@ const ImageAlbumModal: React.FC<ImageAlbumModalProps> = ({
           draggable={false}
           style={{
             transform: `scale(${zoom}) translate(${offset.x}px, ${offset.y}px)`,
-            cursor: zoom > 1 ? (dragging ? 'grabbing' : 'grab') : 'zoom-in',
+            cursor: zoom > 1 ? (dragging ? 'grabbing' : 'zoom-in') : 'zoom-in',
             userSelect: 'none'
           }}
           onMouseDown={handleImgMouseDown}
