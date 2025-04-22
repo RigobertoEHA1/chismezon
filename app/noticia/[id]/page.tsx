@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '../../../lib/supabaseClient';
+import Image from 'next/image';
 import LikesDislikes from '../../../components/LikesDislikes';
 import Comentarios from '../../../components/Comentarios';
 import ImageAlbumModal from '../../../components/ImageAlbumModal';
 import React from "react";
-import Image from 'next/image';
 
 type Noticia = {
   id: string;
@@ -128,57 +128,55 @@ export default function NoticiaPage({ params }: { params: Promise<{ id: string }
       />
       <div className="mb-3 text-gray-700 whitespace-pre-line break-words">{linkify(data.contenido)}</div>
 
-      import Image from 'next/image';
-// ...resto del código...
-{data.imagenes && data.imagenes.length > 0 && (
-  <>
-    {/* Thumbnails */}
-    <div className="flex gap-2 flex-wrap mb-2">
-      {data.imagenes.map((img, idx) =>
-        img ? (
-          <div key={idx} className="w-16 h-16 relative">
-            <Image
-              src={img}
-              alt={`Imagen ${idx + 1}`}
-              fill
-              className="object-cover rounded-lg shadow border border-gray-200 cursor-pointer hover:scale-110 transition"
-              onClick={() => {
-                setAlbum({ imgs: data.imagenes as string[], idx });
-                setZoom(1);
-                setOffset({ x: 0, y: 0 });
-              }}
-              unoptimized
-              sizes="64px"
-            />
+      {data.imagenes && data.imagenes.length > 0 && (
+        <>
+          {/* Thumbnails */}
+          <div className="flex gap-2 flex-wrap mb-2">
+            {data.imagenes.map((img, idx) =>
+              img ? (
+                <div key={idx} className="w-16 h-16 relative">
+                  <Image
+                    src={img}
+                    alt={`Imagen ${idx + 1}`}
+                    fill
+                    className="object-cover rounded-lg shadow border border-gray-200 cursor-pointer hover:scale-110 transition"
+                    onClick={() => {
+                      setAlbum({ imgs: data.imagenes as string[], idx });
+                      setZoom(1);
+                      setOffset({ x: 0, y: 0 });
+                    }}
+                    unoptimized
+                    sizes="64px"
+                  />
+                </div>
+              ) : null
+            )}
           </div>
-        ) : null
+          {/* Modal álbum para imágenes */}
+          {album && (
+            <ImageAlbumModal
+              album={album}
+              setAlbum={setAlbum}
+              zoom={zoom}
+              setZoom={setZoom}
+              offset={offset}
+              setOffset={setOffset}
+              dragging={dragging}
+              setDragging={setDragging}
+              start={start}
+              setStart={setStart}
+              hasDragged={hasDragged}
+              setHasDragged={setHasDragged}
+              handleImgMouseDown={handleImgMouseDown}
+              handleImgMouseMove={handleImgMouseMove}
+              handleImgMouseUp={handleImgMouseUp}
+              handleImgClick={handleImgClick}
+              handleImgMouseLeave={handleImgMouseLeave}
+              handleBackdropClick={handleBackdropClick}
+            />
+          )}
+        </>
       )}
-    </div>
-    {/* Modal álbum para imágenes */}
-    {album && (
-      <ImageAlbumModal
-        album={album}
-        setAlbum={setAlbum}
-        zoom={zoom}
-        setZoom={setZoom}
-        offset={offset}
-        setOffset={setOffset}
-        dragging={dragging}
-        setDragging={setDragging}
-        start={start}
-        setStart={setStart}
-        hasDragged={hasDragged}
-        setHasDragged={setHasDragged}
-        handleImgMouseDown={handleImgMouseDown}
-        handleImgMouseMove={handleImgMouseMove}
-        handleImgMouseUp={handleImgMouseUp}
-        handleImgClick={handleImgClick}
-        handleImgMouseLeave={handleImgMouseLeave}
-        handleBackdropClick={handleBackdropClick}
-      />
-    )}
-  </>
-)}
 
       <div className="text-right text-xs text-blue-500 font-mono mb-4">Por: {data.autor}</div>
       <Comentarios noticiaId={data.id} />

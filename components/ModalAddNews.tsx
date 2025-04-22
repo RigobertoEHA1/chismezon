@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 type Props = {
   isOpen: boolean;
@@ -187,7 +188,16 @@ export default function ModalAddNews({ isOpen, onClose, onNewsAdded }: Props) {
                       <ul className="space-y-2">
                         {imagenes.map((img, idx) => (
                           <li key={idx} className="flex items-center gap-2 text-xs break-all">
-                            <img src={img} alt="" className="w-10 h-10 object-cover rounded border" />
+                            <div className="relative w-10 h-10">
+                              <Image
+                                src={img}
+                                alt=""
+                                fill
+                                className="object-cover rounded border"
+                                unoptimized
+                                sizes="40px"
+                              />
+                            </div>
                             <span className="flex-1">{img}</span>
                             <button
                               type="button"

@@ -71,8 +71,8 @@ const ImageAlbumModal: React.FC<ImageAlbumModalProps> = ({
               transition: 'transform 0.15s',
             }}
             draggable={false}
-            onMouseDown={handleImgMouseDown as any}
-            onMouseMove={handleImgMouseMove as any}
+            onMouseDown={(e: React.MouseEvent<HTMLImageElement>) => handleImgMouseDown(e)}
+            onMouseMove={(e: React.MouseEvent<HTMLImageElement>) => handleImgMouseMove(e)}
             onMouseUp={handleImgMouseUp}
             onClick={handleImgClick}
             onMouseLeave={handleImgMouseLeave}
