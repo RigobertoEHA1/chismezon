@@ -83,10 +83,9 @@ textarea:focus {
   background: #a5b4fc;
 }
 
-/* Imagenes responsivas (por si acaso) */
 img {
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
-  object-fit: cover;
 }
+

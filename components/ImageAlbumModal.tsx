@@ -1,5 +1,6 @@
 // components/ImageAlbumModal.tsx
 import React from 'react';
+import Image from 'next/image';
 
 type ImageAlbumModalProps = {
   album: { imgs: string[]; idx: number };
@@ -48,24 +49,38 @@ const ImageAlbumModal: React.FC<ImageAlbumModalProps> = ({
       className="relative max-w-3xl w-[96vw] sm:w-[90vw] flex flex-col items-center"
       style={{ pointerEvents: 'auto' }}
     >
-      <div className="flex items-center justify-center w-full h-[60vh] sm:h-[80vh] bg-black rounded-xl overflow-hidden">
-        <img
-          src={album.imgs[album.idx]}
-          alt={`Imagen ampliada ${album.idx + 1}`}
-          className="object-contain w-full h-full max-w-full max-h-full bg-black rounded-xl shadow-lg select-none"
-          draggable={false}
+      <div className="flex items-center justify-center w-full h-[60vh] sm:h-[80vh] bg-black rounded-xl overflow-hidden p-2">
+        <div
+          className="relative w-full h-full flex items-center justify-center"
           style={{
-            transform: `scale(${zoom}) translate(${offset.x}px, ${offset.y}px)`,
-            cursor: zoom > 1 ? (dragging ? 'grabbing' : 'zoom-in') : 'zoom-in',
-            userSelect: 'none'
+            overflow: 'hidden',
+            padding: '1rem',
+            background: 'black',
+            borderRadius: '0.75rem',
           }}
-          onMouseDown={handleImgMouseDown}
-          onMouseMove={handleImgMouseMove}
-          onMouseUp={handleImgMouseUp}
-          onClick={handleImgClick}
-          onMouseLeave={handleImgMouseLeave}
-          onDragStart={e => e.preventDefault()}
-        />
+        >
+          <Image
+            src={album.imgs[album.idx]}
+            alt={`Imagen ampliada ${album.idx + 1}`}
+            fill
+            style={{
+              objectFit: 'contain',
+              transform: `scale(${zoom}) translate(${offset.x}px, ${offset.y}px)`,
+              cursor: zoom > 1 ? (dragging ? 'grabbing' : 'zoom-in') : 'zoom-in',
+              userSelect: 'none',
+              transition: 'transform 0.15s',
+            }}
+            draggable={false}
+            onMouseDown={handleImgMouseDown as any}
+            onMouseMove={handleImgMouseMove as any}
+            onMouseUp={handleImgMouseUp}
+            onClick={handleImgClick}
+            onMouseLeave={handleImgMouseLeave}
+            onDragStart={e => e.preventDefault()}
+            unoptimized
+            priority
+          />
+        </div>
       </div>
       <div className="mt-4 flex justify-center items-center gap-6 w-full">
         <button

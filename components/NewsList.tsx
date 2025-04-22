@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '../lib/supabaseClient';
 import toast from 'react-hot-toast';
 import Comentarios from '../components/Comentarios';
@@ -218,24 +219,28 @@ export default function NewsList({ isAdmin, reload }: NewsListProps) {
               )}
             </div>
             {item.imagenes && item.imagenes.length > 0 && (
-              <div className="flex gap-2 flex-wrap mb-2">
-                {item.imagenes.map((img, idx) =>
-                  img ? (
-                    <img
-                      key={idx}
-                      src={img}
-                      alt={`Imagen ${idx + 1}`}
-                      className="w-16 h-16 object-cover rounded-lg shadow border border-gray-200 cursor-pointer transition hover:scale-110"
-                      onClick={() => {
-                        setAlbum({ imgs: item.imagenes as string[], idx });
-                        setZoom(1);
-                        setOffset({ x: 0, y: 0 });
-                      }}
-                    />
-                  ) : null
-                )}
-              </div>
-            )}
+  <div className="flex gap-2 flex-wrap mb-2">
+    {item.imagenes.map((img, idx) =>
+      img ? (
+        <div key={idx} className="w-16 h-16 relative">
+          <Image
+            src={img}
+            alt={`Imagen ${idx + 1}`}
+            fill
+            className="object-cover rounded-lg shadow border border-gray-200 cursor-pointer hover:scale-110 transition"
+            onClick={() => {
+              setAlbum({ imgs: item.imagenes as string[], idx });
+              setZoom(1);
+              setOffset({ x: 0, y: 0 });
+            }}
+            unoptimized
+            sizes="64px"
+          />
+        </div>
+      ) : null
+    )}
+  </div>
+)}
             <div className="text-right text-xs text-blue-500 font-mono">Por: {item.autor}</div>
             <div className="flex gap-2 mt-4 flex-wrap">
               <Link
